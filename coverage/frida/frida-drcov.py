@@ -369,12 +369,20 @@ def main():
     parser.add_argument('-D', '--device',
             help='select a device by id [local]',
             default='local')
+    parser.add_argument('-R', '--remote-device',
+            help='select a device by ip:port',
+            default=None)
 
     args = parser.parse_args()
 
     outfile = args.outfile
 
-    device = frida.get_device(args.device)
+    device = 'local'
+    if args.remote_device:
+        print(args.remote_device)
+        device = frida.get_device_manager().add_remote_device(args.remote_device)
+    else:
+        device = frida.get_device(args.device)
 
     target = -1
     for p in device.enumerate_processes():
